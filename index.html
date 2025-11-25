@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP32-C3 Web Flasher</title>
+
+  <!-- Web Serial tools -->
+  <script type="module" src="https://unpkg.com/esp-web-tools@9.1.1/dist/web/install-button.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 40px;
+      text-align: center;
+    }
+    .card {
+      max-width: 420px;
+      margin: auto;
+      padding: 25px;
+      background: #222;
+      border-radius: 14px;
+      box-shadow: 0 0 20px #0007;
+    }
+    h1 { margin-bottom: 20px; }
+    .footer {
+      margin-top: 40px;
+      opacity: 0.6;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>ESP32-C3 Web Flasher</h1>
+
+    <p>Klik tombol di bawah untuk flashing firmware</p>
+
+    <!-- BUTTON FLASH -->
+    <esp-web-install-button
+      manifest="manifest.json">
+    </esp-web-install-button>
+
+    <p class="footer">Powered by ESP Web Tools</p>
+  </div>
+</body>
+</html>
