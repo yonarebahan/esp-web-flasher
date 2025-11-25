@@ -1,50 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ESP32-C3 Web Flasher</title>
-
-  <!-- Web Serial tools -->
-  <script type="module" src="https://unpkg.com/esp-web-tools@9.1.1/dist/web/install-button.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      padding: 40px;
-      text-align: center;
-    }
-    .card {
-      max-width: 420px;
-      margin: auto;
-      padding: 25px;
-      background: #222;
-      border-radius: 14px;
-      box-shadow: 0 0 20px #0007;
-    }
-    h1 { margin-bottom: 20px; }
-    .footer {
-      margin-top: 40px;
-      opacity: 0.6;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Simple ESP32-C3 Web Flasher</title>
+<style>
+body {
+  background: #111;
+  color: #fff;
+  font-family: Arial;
+  text-align: center;
+  padding: 30px;
+}
+.box {
+  margin: auto;
+  max-width: 480px;
+  padding: 20px;
+  background: #222;
+  border-radius: 10px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+}
+</style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>ESP32-C3 Web Flasher</h1>
 
-    <p>Klik tombol di bawah untuk flashing firmware</p>
+<div class="box">
+<h2>Simple ESP32-C3 Web Flasher</h2>
+<input type="file" id="binfile" accept=".bin"><br><br>
+<button id="connectBtn">Connect</button>
+<button id="flashBtn">Flash</button>
 
-    <!-- BUTTON FLASH -->
-    <esp-web-install-button
-      manifest="manifest.json">
-    </esp-web-install-button>
+<pre id="log" style="text-align:left; background:#000; padding:15px; height:200px; overflow:auto;"></pre>
+</div>
 
-    <p class="footer">Powered by ESP Web Tools</p>
-  </div>
+<script>
+let port, writer;
+
+function log(msg) {
+  document.getElementById("log").textContent += msg + "\n";
+}
+
+document.getElementById("connectBtn").onclick = async () => {
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    writer = port.writable.getWriter();
+    log("Connected to ESP32-C3.");
+  } catch (e) {
+    log("Error: " + e);
+  }
+};
+
+document.getElementById("flashBtn").onclick = async () => {
+  const fileInput = document.getElementById("binfile");
+  if (!fileInput.files.length) {
+    alert("Pilih file .bin dulu.");
+    return;
+  }
+
+  const file = await fileInput.files[0].arrayBuffer();
+  const data = new Uint8Array(file);
+
+  log("Sending binary... (" + data.length + " bytes)");
+
+  for (let i = 0; i < data.length; i++) {
+    await writer.write(data.slice(i, i+1));
+    if (i % 4096 === 0) log("Sent " + i + " bytes...");
+  }
+
+  log("Done!");
+};
+</script>
 </body>
 </html>
